@@ -1,0 +1,76 @@
+---
+title: "IRIS project"
+subtitle: "Client name"
+author: "Alexandre Bohyn"
+format: 
+  html:
+    toc: true
+    toc-location: left
+    number-sections: true
+    self-contained: true
+    theme: inst/styles.scss
+  pdf:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    documentclass: article
+    classoption: landscape
+    fontsize: 12pt
+    geometry: margin=1in
+    include-in-header: inst/header.tex
+execute:
+  echo: false
+---
+
+\pagebreak
+
+```{r load-packages}
+#| warning: false
+
+library(gtsummary)
+library(ggplot2)
+library(here)
+```
+
+```{r load-data}
+iris <- readRDS(here("data/processed/iris.rds"))
+```
+
+\pagebreak
+
+# Descriptive statistics
+
+```{r tbl-iris-summary}
+#| tbl-cap: "Descriptive statistics of the iris dataset."
+#| tbl-pos: "H"
+
+iris |> 
+  tbl_summary(
+    by = species,
+    include = - id,
+    type = all_continuous() ~ "continuous2",
+    statistic = all_continuous2() ~ c("{mean} ({sd})", "{median} ({p25}, {p75})"),
+    digits = all_continuous2() ~ 1
+  ) |> 
+  add_overall() |> 
+  add_p()
+```
+
+\pagebreak
+
+# Length vs Width
+
+```{r fig-length-vs-width}
+#| fig-cap: "Sepal length vs sepal width, colored by species."
+#| fig-width: 7
+#| fig-height: 5
+
+ggplot(iris, aes(x = sepal_length, y = sepal_width, fill = species)) +
+  geom_point(pch = 21, color = "white") +
+  geom_smooth(aes(group = species, color = species), method = "lm", formula = "y ~ x", alpha = 0.2) +
+  ggeasy::easy_labs() +
+  see::scale_fill_material() +
+  see::scale_color_material() +
+  cowplot::theme_half_open(font_size = 14)
+```
+
