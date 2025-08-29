@@ -1,5 +1,5 @@
 ---
-title: "IRIS project"
+title: "RCT project"
 subtitle: "Client name"
 author: "Alexandre Bohyn"
 format: 
@@ -18,6 +18,10 @@ format:
     fontsize: 12pt
     geometry: margin=1in
     include-in-header: inst/header.tex
+  docx:
+    toc: true
+    toc-depth: 2
+    number-sections: true
 execute:
   echo: false
 ---
@@ -33,7 +37,7 @@ library(here)
 ```
 
 ```{r load-data}
-iris <- readRDS(here("data/processed/iris.rds"))
+trial <- readRDS(here("data/processed/trial.rds"))
 ```
 
 \pagebreak
@@ -41,36 +45,38 @@ iris <- readRDS(here("data/processed/iris.rds"))
 # Descriptive statistics
 
 ```{r tbl-iris-summary}
-#| tbl-cap: "Descriptive statistics of the iris dataset."
+#| tbl-cap: "Descriptive statistics of the TRIAL dataset."
 #| tbl-pos: "H"
 
-iris |> 
+trial |>
   tbl_summary(
-    by = species,
-    include = - id,
+    by = trt,
     type = all_continuous() ~ "continuous2",
-    statistic = all_continuous2() ~ c("{mean} ({sd})", "{median} ({p25}, {p75})"),
+    statistic = all_continuous2() ~
+      c("{mean} ({sd})", "{median} ({p25}, {p75})"),
     digits = all_continuous2() ~ 1
-  ) |> 
-  add_overall() |> 
-  add_p()
+  ) |>
+  add_overall() |>
+  add_p() |>
+  as_flex_table()
 ```
 
 \pagebreak
 
-# Length vs Width
+# Survival analysis
 
-```{r fig-length-vs-width}
-#| fig-cap: "Sepal length vs sepal width, colored by species."
-#| fig-width: 7
-#| fig-height: 5
+```{r fig-km}
+#| fig-cap: "Kaplan-Meier curve per treatment group."
+#| out-width: "90%"
 
-ggplot(iris, aes(x = sepal_length, y = sepal_width, fill = species)) +
-  geom_point(pch = 21, color = "white") +
-  geom_smooth(aes(group = species, color = species), method = "lm", formula = "y ~ x", alpha = 0.2) +
-  ggeasy::easy_labs() +
-  see::scale_fill_material() +
-  see::scale_color_material() +
-  cowplot::theme_half_open(font_size = 14)
+knitr::include_graphics(path = here::here("output/figures/km_trt.png"))
 ```
 
+```{r tbl-coxph}
+#| tbl-cap: "Cox proportional hazards model results."
+#| tbl-pos: "H"
+
+tab <- readRDS(here("data/tables/coxph_hr.rds"))
+tab |>
+  as_flex_table()
+```
