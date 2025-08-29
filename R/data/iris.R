@@ -1,9 +1,11 @@
 #' Name         : iris.R
 #' Author       : Alexandre Bohyn
-#' Date         : 28 Aug 2025
+#' Date         : 01 Jan 2025
 #' Purpose      : Read the raw iris csv file and save it as an R data file.
 #' Files created: `data/processed/iris.rds`
 #' Edits        :
+#'              - 01 Jan 2025: First version.
+#'              - 05 Jan 2025: Added variable labels.
 
 # Packages ----------------------------------------------------------------
 
